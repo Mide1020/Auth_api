@@ -6,7 +6,7 @@ from jose import jwt, JWTError
 from schemas import ForgotPasswordRequest, ResetPasswordRequest
 from database import get_db
 from models import User
-from schemas import UserCreate, UserOut, Token, RefreshTokenRequest
+from schemas import UserCreate, UserOut, Token, RefreshTokenRequest, UserRegisterResponse
 from auth.utils import hash_password, verify_password, create_access_token, SECRET_KEY, ALGORITHM
 from fastapi.security import OAuth2PasswordRequestForm
 from auth.dependencies import get_current_user
@@ -15,7 +15,7 @@ from auth.dependencies import get_current_user
 router = APIRouter(prefix="/auth", tags=["Auth"])
 
 # ================= REGISTER =================
-@router.post("/register", response_model=UserOut)
+@router.post("/register", response_model=UserRegisterResponse)
 def register(user: UserCreate, db: Session = Depends(get_db)):
     # check if email exists
     existing = db.query(User).filter(User.email == user.email).first()
@@ -44,7 +44,13 @@ def register(user: UserCreate, db: Session = Depends(get_db)):
     # TEMP: print link (later send via email)
     print("Verification link:", verification_link)
 
-    return new_user
+    #return new_user
+    return {
+    "id": new_user.id,
+    "email": new_user.email,
+    "is_active": new_user.is_active,
+    "verification_token": verification_token
+}
 
 
 # ================= LOGIN =================

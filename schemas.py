@@ -13,6 +13,13 @@ class UserOut(BaseModel):
     email: EmailStr
     is_active: bool
 
+
+class UserRegisterResponse(BaseModel):
+    id: int
+    email: EmailStr
+    is_active: bool
+    verification_token: str
+
     class Config:
         from_attributes = True
 
